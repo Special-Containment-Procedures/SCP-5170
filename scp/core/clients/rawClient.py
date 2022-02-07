@@ -59,7 +59,7 @@ class client(Client):
                 await asyncio.sleep(e.x + 2)
             except (TimeoutError, OSError):
                 # attempt to fix TimeoutError on slower internet connection
-                await self.sesstion.stop()
+                await self.session.stop()
                 await self.session.start()
 
     # from Kantek
