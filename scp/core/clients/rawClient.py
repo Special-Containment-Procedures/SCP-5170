@@ -6,18 +6,26 @@ from aiohttp import ClientSession
 import asyncio
 import logging
 
+config = ConfigParser()
+config.read("config.ini")
+
 
 class client(Client):
     def __init__(
         self,
         name: str,
         aioclient=ClientSession,
+        api_id: int = config.getint('pyrogram', 'api_id'),
+        api_hash: str = config.get('pyrogram', 'api_hash'),
     ):
         self.name = name
+        self.api_id = api_id
+        self.api_hash = api_hash
         super().__init__(
             self.name,
             workers=16,
-            config_file='config.ini',
+            api_id=self.api_id,
+            api_hash=self.api_hash,
         )
         self.aioclient = aioclient()
 
@@ -36,28 +44,25 @@ class client(Client):
     def command(self, *args, **kwargs):
         return command(*args, **kwargs)
 
-    async def send(
+    async def invoke(
         self,
-        data: raw.core.TLObject,
+        query: raw.core.TLObject,
         retries: int = session.Session.MAX_RETRIES,
         timeout: float = session.Session.WAIT_TIMEOUT,
         sleep_threshold: float = None
     ):
         while True:
             try:
-                return await super().send(
-                    data=data,
+                return await super().invoke(
+                    query=query,
                     retries=retries,
                     timeout=timeout,
                     sleep_threshold=sleep_threshold,
                 )
-            except (
-                errors.SlowmodeWait,
-                errors.FloodWait,
-            ) as e:
+            except (errors.SlowmodeWait, errors.FloodWait) as e:
                 logging.warning(f'Sleeping for - {e.x} | {e}')
                 await asyncio.sleep(e.x + 2)
-            except (TimeoutError, OSError):
+            except OSError:
                 # attempt to fix TimeoutError on slower internet connection
                 await self.session.stop()
                 await self.session.start()
