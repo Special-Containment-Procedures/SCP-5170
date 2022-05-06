@@ -39,14 +39,13 @@ async def _(_, query: bot.types.CallbackQuery):
     if query.data == 'edit/config':
         buttons = []
         for _, y in bot._config.__dict__['_sections'].items():
-            for i in y:
-                buttons.append(
-                    [
-                        bot.types.InlineKeyboardButton(
-                            i, callback_data=f'edit/config/{i}',
-                        ),
-                    ],
-                )
+            buttons.extend(
+                [
+                    bot.types.InlineKeyboardButton(
+                        i, callback_data=f'edit/config/{i}',
+                    ), ] for i in y
+            )
+
         return await query.edit_message_text(
             'choose a config key to edit in config.ini',
             reply_markup=bot.types.InlineKeyboardMarkup(buttons),

@@ -14,30 +14,21 @@ class _KB(InlineKeyboardButton):
 
 
 def paginate_modules(page_n, module_dict, prefix, chat=None):
-    if not chat:
-        modules = sorted(
-            [
-                _KB(
-                    x.__PLUGIN__,
-                    callback_data='{}_module({})'.format(
-                        prefix, x.__PLUGIN__.lower(),
-                    ),
-                )
-                for x in module_dict.values()
-            ],
+    modules = sorted([
+        _KB(
+            x.__PLUGIN__,
+            callback_data=f'{prefix}_module({chat},{x.__PLUGIN__.lower()})',
         )
-    else:
-        modules = sorted(
-            [
-                _KB(
-                    x.__PLUGIN__,
-                    callback_data='{}_module({},{})'.format(
-                        prefix, chat, x.__PLUGIN__.lower(),
-                    ),
-                )
-                for x in module_dict.values()
-            ],
-        )
+        for x in module_dict.values()
+    ]) if chat else sorted(
+        [
+            _KB(
+                x.__PLUGIN__,
+                callback_data=f'{prefix}_module({x.__PLUGIN__.lower()})',
+            )
+            for x in module_dict.values()
+        ],
+    )
 
     pairs = list(zip(modules[::2], modules[1::2]))
     c = 0

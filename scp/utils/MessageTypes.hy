@@ -11,7 +11,8 @@
         AUDIO 5
         VOICE 6
         VIDEO 7
-        ANIMATION 8)))
+        ANIMATION 8
+        POLL 9)))
 
 
 (defn getType [^user.types.Message message]
@@ -43,4 +44,7 @@
     (if message.animation
         (setv content message.animation.file_id
             dataType Types.ANIMATION))
+    (if message.poll
+        (setv content message.poll.id
+            dataType Types.POLL))
     (return (, dataType content message.caption)))

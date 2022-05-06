@@ -4,13 +4,20 @@
 
 (defn/a InitializeDatabase[]
     (try
-        (user._config.getint ".internal" "databaseChannel")
+        (if (int (user._config.get "pyrogram" "test_mode"))
+            (setv db "databaseChannel-Test")
+            (setv db "databaseChannel"))
+        (print db)
+        (user._config.getint ".internal" db)
         (except [configparser.NoSectionError]
             (with [file (open "config.ini" "w")]
                 (user._config.add_section ".internal")
+                (user._config.write file)))
+            (except [configparser.NoOptionError]
                 (setv channel
                     (await (user.create_channel "scp-Database"
                             :description "Do not Play with this channel!")))
                 (user._config.set
-                    ".internal" "databaseChannel" (str channel.id))
-                (user._config.write file)))))
+                    ".internal" db (str channel.id))))
+        (with [file (open "config.ini" "w")]
+                (user._config.write file)))

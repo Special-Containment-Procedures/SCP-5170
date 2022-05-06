@@ -7,7 +7,7 @@ import asyncio
 import logging
 
 config = ConfigParser()
-config.read("config.ini")
+config.read('config.ini')
 
 
 class client(Client):
@@ -17,16 +17,21 @@ class client(Client):
         aioclient=ClientSession,
         api_id: int = config.getint('pyrogram', 'api_id'),
         api_hash: str = config.get('pyrogram', 'api_hash'),
+        test_mode: bool = config.getboolean('pyrogram', 'test_mode'),
     ):
         self.name = name
         self.api_id = api_id
         self.api_hash = api_hash
+        self.test_mode = test_mode
+        self.me = {}
         super().__init__(
-            self.name,
+            f'{self.name}-test_mode' if self.test_mode else self.name,
             workers=16,
             api_id=self.api_id,
             api_hash=self.api_hash,
+            test_mode=self.test_mode,
         )
+
         self.aioclient = aioclient()
 
     async def start(self):

@@ -1,6 +1,7 @@
 [pyrogram]
 api_id = 123456
 api_hash = abcdefghijklmnop
+test_mode = 0
 
 [scp-5170]
 SudoList = 1769494496
