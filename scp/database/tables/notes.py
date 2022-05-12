@@ -1,7 +1,6 @@
 from scp import user
 import json
 from .import checkTable
-from pyrogram.enums.parse_mode import ParseMode
 
 
 class Notes:
@@ -19,7 +18,8 @@ class Notes:
         msg = await user.get_messages(
             chat_id=user._config.getint(
                 '.internal',
-                'databasechannel-test' if user.test_mode else 'databasechannel',
+                'databasechannel-test'
+                if user.test_mode else 'databasechannel',
             ),
             message_ids=await checkTable(
                 'notes-test' if user.test_mode else 'notes',
@@ -32,11 +32,13 @@ class Notes:
     async def dump(self, data: dict):
         return await user.edit_message_text(
             chat_id=user._config.getint(
-                '.internal', 'databasechannel-test' if user.test_mode else 'databasechannel',
+                '.internal',
+                'databasechannel-test'
+                if user.test_mode else 'databasechannel',
             ),
             message_id=user._config.getint(
                 '.internal', 'notes-test' if user.test_mode else 'notes',
             ),
             text=f'```{json.dumps(data)}```',
-            parse_mode=ParseMode.MARKDOWN,
+            parse_mode=user.enums.parse_mode.ParseMode.MARKDOWN,
         )

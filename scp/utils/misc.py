@@ -1,8 +1,8 @@
-from pyrogram.types import InlineKeyboardButton
+from scp import user
 from math import ceil
 
 
-class _KB(InlineKeyboardButton):
+class _KB(user.types.InlineKeyboardButton):
     def __eq__(self, other):
         return self.text == other.text
 

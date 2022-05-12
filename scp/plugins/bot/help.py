@@ -2,7 +2,6 @@ import re
 from scp import bot, user
 from scp.core.filters.Command import prefixes
 from scp.core.functions.plugins import HELP_COMMANDS
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from scp.utils.misc import paginate_modules
 from scp.utils.selfInfo import info  # type: ignore
 from checksumdir import dirhash
@@ -10,7 +9,7 @@ from checksumdir import dirhash
 
 async def help_parser(client, chat_id, text, keyboard=None):
     if not keyboard:
-        keyboard = InlineKeyboardMarkup(
+        keyboard = bot.types.InlineKeyboardMarkup(
             paginate_modules(0, HELP_COMMANDS, 'help'),
         )
     await client.send_message(chat_id, text, reply_markup=keyboard)
@@ -154,7 +153,7 @@ async def help_button(_, query):
     back_match = re.match(r'help_back', query.data)
     create_match = re.match(r'help_create', query.data)
     if mod_match:
-        module = mod_match.group(1)
+        module = mod_match[1]
         text = (
             'Document for **{}**:\n'.format(
                 HELP_COMMANDS[module].__PLUGIN__,
@@ -171,10 +170,10 @@ async def help_button(_, query):
         await editMessage(
             query,
             text=text,
-            reply_markup=InlineKeyboardMarkup(
+            reply_markup=bot.types.InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton(
+                        bot.types.InlineKeyboardButton(
                             text='Back',
                             callback_data='help_back',
                         ),
@@ -185,22 +184,22 @@ async def help_button(_, query):
         )
 
     elif prev_match:
-        curr_page = int(prev_match.group(1))
+        curr_page = int(prev_match[1])
         await editMessage(
             query,
             text=helpMessage,
-            reply_markup=InlineKeyboardMarkup(
+            reply_markup=bot.types.InlineKeyboardMarkup(
                 paginate_modules(curr_page - 1, HELP_COMMANDS, 'help'),
             ),
             disable_web_page_preview=True,
         )
 
     elif next_match:
-        next_page = int(next_match.group(1))
+        next_page = int(next_match[1])
         await editMessage(
             query,
             text=helpMessage,
-            reply_markup=InlineKeyboardMarkup(
+            reply_markup=bot.types.InlineKeyboardMarkup(
                 paginate_modules(next_page + 1, HELP_COMMANDS, 'help'),
             ),
             disable_web_page_preview=True,
@@ -210,7 +209,7 @@ async def help_button(_, query):
         await editMessage(
             query,
             text=helpMessage,
-            reply_markup=InlineKeyboardMarkup(
+            reply_markup=bot.types.InlineKeyboardMarkup(
                 paginate_modules(0, HELP_COMMANDS, 'help'),
             ),
             disable_web_page_preview=True,

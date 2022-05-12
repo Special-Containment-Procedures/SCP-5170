@@ -7,7 +7,6 @@
         (if (int (user._config.get "pyrogram" "test_mode"))
             (setv db "databaseChannel-Test")
             (setv db "databaseChannel"))
-        (print db)
         (user._config.getint ".internal" db)
         (except [configparser.NoSectionError]
             (with [file (open "config.ini" "w")]

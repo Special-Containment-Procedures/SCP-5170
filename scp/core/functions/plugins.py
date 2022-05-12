@@ -28,7 +28,7 @@ async def loadPlugins(pluginDir: str = list):
                         imported_module.__PLUGIN__.lower()
                     ] = imported_module
                 else:
-                    raise Exception(
+                    raise ValueError(
                         "Can't have two modules with the same name!",
                     )
             if hasattr(imported_module, '__DOC__') and imported_module.__DOC__:
@@ -56,7 +56,7 @@ async def loadPlugins(pluginDir: str = list):
                         imported_module.__PLUGIN__.lower()
                     ] = imported_module
                 else:
-                    raise Exception(
+                    raise ValueError(
                         "Can't have two modules with the same name!",
                     )
             if hasattr(imported_module, '__DOC__') and imported_module.__DOC__:

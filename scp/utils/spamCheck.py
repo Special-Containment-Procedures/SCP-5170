@@ -2,7 +2,7 @@
 from time import time
 from collections import defaultdict
 from typing import Union
-from pyrogram import types
+from scp import user as client
 import asyncio
 
 
@@ -12,7 +12,7 @@ SECONDS = 6
 
 
 async def is_flood(
-    user: types.User,
+    user: client.types.User,
     messages: int = MESSAGES,
     seconds: int = SECONDS,
     users: defaultdict = USERS,

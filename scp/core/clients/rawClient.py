@@ -1,4 +1,13 @@
-from pyrogram import Client, filters, types, raw, errors, session, handlers
+from pyrogram import (
+    Client,
+    filters,
+    types,
+    raw,
+    errors,
+    session,
+    handlers,
+    enums,
+)
 from scp.core.filters.Command import command
 from configparser import ConfigParser
 from kantex import md as Markdown
@@ -55,7 +64,7 @@ class client(Client):
         retries: int = session.Session.MAX_RETRIES,
         timeout: float = session.Session.WAIT_TIMEOUT,
         sleep_threshold: float = None
-    ):
+    ) -> raw.core.TLObject:
         while True:
             try:
                 return await super().invoke(
@@ -69,8 +78,9 @@ class client(Client):
                 await asyncio.sleep(e.x + 2)
             except OSError:
                 # attempt to fix TimeoutError on slower internet connection
-                await self.session.stop()
-                await self.session.start()
+                # await self.session.stop()
+                # await self.session.start()
+                ...
 
     # from Kantek
     async def resolve_url(self, url: str) -> str:
@@ -99,6 +109,7 @@ class client(Client):
         return data
 
     filters = filters
+    enums = enums
     raw = raw
     types = types
     handlers = handlers
