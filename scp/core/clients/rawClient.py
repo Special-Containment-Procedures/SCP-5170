@@ -117,8 +117,6 @@ class client(Client):
     exceptions = errors
     _config = ConfigParser()
     _config.read('config.ini')
-    _sudo = []
-    for x in _config.get('scp-5170', 'SudoList').split():
-        _sudo.append(int(x))
+    _sudo = [int(x) for x in _config.get('scp-5170', 'SudoList').split()]
     sudo = (filters.me | filters.user(_sudo))
     log_channel = _config.getint('scp-5170', 'LogChannel')
