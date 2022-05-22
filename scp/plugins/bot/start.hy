@@ -2,7 +2,7 @@
 
 
 (with-decorator (
-    bot.on_message :filters (bot.command "start" :prefixes "/"))
+    bot.on_message :filters (bot.filters.command "start" :prefixes "/"))
     (defn/a _ [_ message]
         (setv text
             (user.md.KanTeXDocument

@@ -16,7 +16,7 @@ async def help_parser(client, chat_id, text, keyboard=None):
 
 @user.on_message(
     user.filters.sudo &
-    user.command('help'),
+    user.filters.command('help'),
 )
 async def _(_, message: user.types.Message):
     x = await user.get_inline_bot_results(
@@ -55,7 +55,7 @@ async def _(_, query: bot.types.InlineQuery):
 
 @bot.on_message(
     (bot.filters.user(bot.sudo) | bot.filters.user(user.me.id))
-    & bot.command('help', prefixes='/'),
+    & bot.filters.command('help', prefixes='/'),
 )
 async def help_command(client, message):
     await help_parser(

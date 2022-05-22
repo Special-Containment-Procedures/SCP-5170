@@ -1,5 +1,5 @@
 import pyrogram
-from scp.core.filters.Command import command
+from scp import core
 from configparser import ConfigParser
 from kantex import md as Markdown
 from aiohttp import ClientSession
@@ -11,7 +11,7 @@ with open('config.ini') as configFile:
     config.read_file(configFile)
 
 
-class client(pyrogram.Client):
+class Client(pyrogram.Client):
     def __init__(
         self,
         name: str,
@@ -33,8 +33,11 @@ class client(pyrogram.Client):
         self.enums = pyrogram.enums
         self.handlers = pyrogram.handlers
         self.config = config
-        self.sudo = [int(x) for x in self.config.get('scp-5170', 'SudoList').split()]
-
+        self.sudo = [
+            int(x) for x in self.config.get(
+                'scp-5170', 'SudoList',
+            ).split()
+        ]
 
         super().__init__(
             f'{self.name}-test_mode' if self.test_mode else self.name,
@@ -49,7 +52,15 @@ class client(pyrogram.Client):
     async def start(self):
         await super().start()
         self.me = await super().get_me()
-        setattr(self.filters, 'sudo', (self.filters.me | self.filters.user(self.sudo)))
+        setattr(
+            self.filters, 'sudo',
+            (self.filters.me | self.filters.user(self.sudo)),
+        )
+        setattr(self.filters, 'command', core.filters.command)
+        setattr(
+            self.types, 'InlineQueryResultAudio',
+            core.types.InlineQueryResultAudio,
+        )
         logging.warning(
             f'logged in as {self.me.first_name}.',
         )
@@ -59,9 +70,6 @@ class client(pyrogram.Client):
             f'logged out from {super.me.first_name}.',
         )
         await super().stop()
-
-    def command(self, *args, **kwargs):
-        return command(*args, **kwargs)
 
     async def invoke(
         self,
@@ -78,7 +86,7 @@ class client(pyrogram.Client):
                     timeout=timeout,
                     sleep_threshold=sleep_threshold,
                 )
-            except (errors.SlowmodeWait, errors.FloodWait) as e:
+            except (pyrogram.errors.SlowmodeWait, pyrogram.errors.FloodWait) as e:
                 logging.warning(f'Sleeping for - {e.x} | {e}')
                 await asyncio.sleep(e.x + 2)
             except OSError:

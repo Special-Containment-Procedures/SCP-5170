@@ -3,11 +3,10 @@
 (import sys)
 (import time)
 (import asyncio)
-(import [.core.clients [client]])
+(import [scp [core]])
 (import [rich.logging [RichHandler]])
 (import [pyromod [listen]])
 (import [scp.utils.gitTools [getVersion]])
-(import [scp.core.functions.idle[Idle]])
 (import pathlib)
 
 (setv RUNTIME (time.time)
@@ -17,7 +16,7 @@
     __version__ (get Versions 1)
     console (logging.StreamHandler)
     fileLogger (logging.FileHandler "logs.txt")
-    idle (Idle))
+    idle (core.functions.Idle))
 
 (logging.basicConfig
     :level logging.INFO
@@ -35,5 +34,5 @@
 (.addHandler (logging.getLogger "") fileLogger)
 
 (setv log (logging.getLogger)
-    bot (client f"{(.parent.resolve (pathlib.Path __file__))}-bot")
-    user (client f"{(.parent.resolve (pathlib.Path __file__))}-user"))
+    bot (core.clients.Client f"{(.parent.resolve (pathlib.Path __file__))}-bot")
+    user (core.clients.Client f"{(.parent.resolve (pathlib.Path __file__))}-user"))

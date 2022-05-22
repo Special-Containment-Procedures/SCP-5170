@@ -3,7 +3,7 @@ from scp import bot, user
 
 @bot.on_message(
     bot.filters.user(user.me.id)
-    & bot.command('config', prefixes='/')
+    & bot.filters.command('config', prefixes='/')
     & bot.filters.private,
 )
 async def _(_, message: bot.types.Message):
