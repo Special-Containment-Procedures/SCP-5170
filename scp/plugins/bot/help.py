@@ -3,7 +3,6 @@ from scp import bot, user
 from scp.core.filters.Command import prefixes
 from scp.core.functions.plugins import HELP_COMMANDS
 from scp.utils.misc import paginate_modules
-from scp.utils.selfInfo import info  # type: ignore
 from checksumdir import dirhash
 
 
@@ -21,7 +20,7 @@ async def help_parser(client, chat_id, text, keyboard=None):
 )
 async def _(_, message: user.types.Message):
     x = await user.get_inline_bot_results(
-        info['_bot_username'],
+        bot.me.username,
         'help',
     )
     for m in x.results:
@@ -34,7 +33,7 @@ async def _(_, message: user.types.Message):
 
 @bot.on_inline_query(
     user.filters.user(
-        info['_user_id'],
+        user.me.id,
     )
     & user.filters.regex('^help'),
 )
@@ -55,7 +54,7 @@ async def _(_, query: bot.types.InlineQuery):
 
 
 @bot.on_message(
-    (bot.filters.user(bot._sudo) | bot.filters.user(info['_user_id']))
+    (bot.filters.user(bot._sudo) | bot.filters.user(user.me.id))
     & bot.command('help', prefixes='/'),
 )
 async def help_command(client, message):
@@ -144,7 +143,7 @@ helpMessage = user.md.KanTeXDocument(
 
 @bot.on_callback_query(
     help_button_create
-    & (bot.filters.user(bot._sudo) | bot.filters.user(info['_user_id'])),
+    & (bot.filters.user(bot._sudo) | bot.filters.user(user.me.id)),
 )
 async def help_button(_, query):
     mod_match = re.match(r'help_module\((.+?)\)', query.data)

@@ -16,7 +16,8 @@ import asyncio
 import logging
 
 config = ConfigParser()
-config.read('config.ini')
+with open('config.ini') as configFile:
+    config.read_file(configFile)
 
 
 class client(Client):
@@ -32,7 +33,7 @@ class client(Client):
         self.api_id = api_id
         self.api_hash = api_hash
         self.test_mode = test_mode
-        self.me = {}
+        self.me = None
         super().__init__(
             f'{self.name}-test_mode' if self.test_mode else self.name,
             workers=16,
@@ -45,13 +46,14 @@ class client(Client):
 
     async def start(self):
         await super().start()
+        self.me = await super().get_me()
         logging.warning(
-            f'logged in as {(await super().get_me()).first_name}.',
+            f'logged in as {self.me.first_name}.',
         )
 
     async def stop(self, *args):
         logging.warning(
-            f'logged out from {(await super().get_me()).first_name}.',
+            f'logged out from {super.me.first_name}.',
         )
         await super().stop()
 

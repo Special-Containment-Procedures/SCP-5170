@@ -1,5 +1,4 @@
 (import [scp[bot user __version__ __longVersion__]])
-(import [scp.utils.selfInfo[info]])
 
 
 (with-decorator (

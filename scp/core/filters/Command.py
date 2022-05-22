@@ -4,7 +4,6 @@ from pyrogram.filters import create
 from pyrogram.types import Message
 from pyrogram import Client
 from configparser import ConfigParser
-from scp.utils.selfInfo import info  # type: ignore
 
 config = ConfigParser()
 config.read('config.ini')
@@ -29,7 +28,7 @@ def command(
     Command arguments are given to user as message.command
     """
 
-    async def func(flt, _: Client, message: Message):
+    async def func(flt, client: Client, message: Message):
         text: str = message.text or message.caption
         message.command = None
         if not text:
@@ -37,8 +36,8 @@ def command(
         regex = r'(?i)^({prefix})({regex})(@{bot_name})?(\s.*)?$'.format(
             prefix='|'.join(re.escape(x) for x in flt.prefixes),
             regex='|'.join(flt.commands),
-            bot_name=info['_user_username'].lower(
-            ) if info['_user_username'] else None,
+            bot_name=client.me.username.lower(
+            ) if client.me.username else None,
         )
         if matches := re.search(regex, text, flags=re.IGNORECASE):
             message.command = [matches[2]]

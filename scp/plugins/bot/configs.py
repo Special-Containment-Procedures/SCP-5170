@@ -1,9 +1,8 @@
-from scp.utils.selfInfo import info  # type: ignore
-from scp import bot
+from scp import bot, user
 
 
 @bot.on_message(
-    bot.filters.user(info['_user_id'])
+    bot.filters.user(user.me.id)
     & bot.command('config', prefixes='/')
     & bot.filters.private,
 )
@@ -31,7 +30,7 @@ async def _(_, message: bot.types.Message):
 
 @bot.on_callback_query(
     bot.filters.user(
-        info['_user_id'],
+        user.me.id,
     )
     & bot.filters.regex('^edit/config'),
 )

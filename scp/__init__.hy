@@ -7,6 +7,7 @@
 (import [rich.logging [RichHandler]])
 (import [pyromod [listen]])
 (import [scp.utils.gitTools [getVersion]])
+(import [scp.core.functions.idle[Idle]])
 (import pathlib)
 
 (setv RUNTIME (time.time)
@@ -15,7 +16,8 @@
     __longVersion__ (get Versions 0)
     __version__ (get Versions 1)
     console (logging.StreamHandler)
-    fileLogger (logging.FileHandler "logs.txt"))
+    fileLogger (logging.FileHandler "logs.txt")
+    idle (Idle))
 
 (logging.basicConfig
     :level logging.INFO
