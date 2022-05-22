@@ -46,7 +46,7 @@ client.command - command filter with '(*prefix)command@username'
 from scp import user
 
 @user.on_message(
-    user.sudo
+    user.filters.sudo
     & user.command('hello')
 )
 async def _(_, message: types.Message):

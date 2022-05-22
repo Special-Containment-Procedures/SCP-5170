@@ -1,13 +1,4 @@
-from pyrogram import (
-    Client,
-    filters,
-    types,
-    raw,
-    errors,
-    session,
-    handlers,
-    enums,
-)
+import pyrogram
 from scp.core.filters.Command import command
 from configparser import ConfigParser
 from kantex import md as Markdown
@@ -20,7 +11,7 @@ with open('config.ini') as configFile:
     config.read_file(configFile)
 
 
-class client(Client):
+class client(pyrogram.Client):
     def __init__(
         self,
         name: str,
@@ -34,6 +25,17 @@ class client(Client):
         self.api_hash = api_hash
         self.test_mode = test_mode
         self.me = None
+        self.md = Markdown
+        self.exceptions = pyrogram.errors
+        self.filters = pyrogram.filters
+        self.types = pyrogram.types
+        self.raw = pyrogram.raw
+        self.enums = pyrogram.enums
+        self.handlers = pyrogram.handlers
+        self.config = config
+        self.sudo = [int(x) for x in self.config.get('scp-5170', 'SudoList').split()]
+
+
         super().__init__(
             f'{self.name}-test_mode' if self.test_mode else self.name,
             workers=16,
@@ -47,6 +49,7 @@ class client(Client):
     async def start(self):
         await super().start()
         self.me = await super().get_me()
+        setattr(self.filters, 'sudo', (self.filters.me | self.filters.user(self.sudo)))
         logging.warning(
             f'logged in as {self.me.first_name}.',
         )
@@ -62,11 +65,11 @@ class client(Client):
 
     async def invoke(
         self,
-        query: raw.core.TLObject,
-        retries: int = session.Session.MAX_RETRIES,
-        timeout: float = session.Session.WAIT_TIMEOUT,
+        query: pyrogram.raw.core.TLObject,
+        retries: int = pyrogram.session.Session.MAX_RETRIES,
+        timeout: float = pyrogram.session.Session.WAIT_TIMEOUT,
         sleep_threshold: float = None
-    ) -> raw.core.TLObject:
+    ) -> pyrogram.raw.core.TLObject:
         while True:
             try:
                 return await super().invoke(
@@ -109,16 +112,3 @@ class client(Client):
         writer.close()
         await writer.wait_closed()
         return data
-
-    filters = filters
-    enums = enums
-    raw = raw
-    types = types
-    handlers = handlers
-    md = Markdown
-    exceptions = errors
-    _config = ConfigParser()
-    _config.read('config.ini')
-    _sudo = [int(x) for x in _config.get('scp-5170', 'SudoList').split()]
-    sudo = (filters.me | filters.user(_sudo))
-    log_channel = _config.getint('scp-5170', 'LogChannel')

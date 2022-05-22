@@ -15,7 +15,7 @@ async def help_parser(client, chat_id, text, keyboard=None):
 
 
 @user.on_message(
-    user.sudo &
+    user.filters.sudo &
     user.command('help'),
 )
 async def _(_, message: user.types.Message):
@@ -54,7 +54,7 @@ async def _(_, query: bot.types.InlineQuery):
 
 
 @bot.on_message(
-    (bot.filters.user(bot._sudo) | bot.filters.user(user.me.id))
+    (bot.filters.user(bot.sudo) | bot.filters.user(user.me.id))
     & bot.command('help', prefixes='/'),
 )
 async def help_command(client, message):
@@ -143,7 +143,7 @@ helpMessage = user.md.KanTeXDocument(
 
 @bot.on_callback_query(
     help_button_create
-    & (bot.filters.user(bot._sudo) | bot.filters.user(user.me.id)),
+    & (bot.filters.user(bot.sudo) | bot.filters.user(user.me.id)),
 )
 async def help_button(_, query):
     mod_match = re.match(r'help_module\((.+?)\)', query.data)
@@ -159,7 +159,7 @@ async def help_button(_, query):
             )
             + HELP_COMMANDS[module].__DOC__.replace(
                 '(*prefix)',
-                user._config.get(
+                user.config.get(
                     'scp-5170',
                     'prefixes',
                 ).split()[0],

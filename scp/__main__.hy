@@ -9,7 +9,7 @@
     (await (bot.start))
     (await (user.start))
     (await (InitializeDatabase))
-    (await (loadPlugins(.split(user._config.get "scp-5170" "plugins"))))
+    (await (loadPlugins(.split(user.config.get "scp-5170" "plugins"))))
     (await (idle.idle))
 )
 
