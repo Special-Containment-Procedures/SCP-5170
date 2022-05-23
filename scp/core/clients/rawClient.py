@@ -1,5 +1,6 @@
 import pyrogram
 from scp import core
+from scp.utils.parser import getAttr
 from configparser import ConfigParser
 from kantex import md as Markdown
 from aiohttp import ClientSession
@@ -38,7 +39,7 @@ class Client(pyrogram.Client):
                 'scp-5170', 'SudoList',
             ).split()
         ]
-
+        self.aioclient = aioclient()
         super().__init__(
             f'{self.name}-test_mode' if self.test_mode else self.name,
             workers=16,
@@ -47,7 +48,21 @@ class Client(pyrogram.Client):
             test_mode=self.test_mode,
         )
 
-        self.aioclient = aioclient()
+    def __getattr__(self, method_name):
+        if not any(c.isupper() for c in method_name):
+            return super().__getattribute__(method_name)
+        
+        async def invoke(**kwargs):
+            for y in [x for x in dir(
+                self.raw.functions
+            ) if not x.startswith("__") and not x[0].isupper()]:
+                if method := getattr(
+                    getattr(self.raw.functions, y, None),
+                    method_name,
+                    None
+                ):
+                    return await self.invoke(method(**kwargs))
+        return invoke
 
     async def start(self):
         await super().start()
