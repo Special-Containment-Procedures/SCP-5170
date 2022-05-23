@@ -62,6 +62,7 @@ class Client(pyrogram.Client):
                     None
                 ):
                     return await self.invoke(method(**kwargs))
+            raise AttributeError(f"'Client' object has no attribute '{method_name}'")
         return invoke
 
     async def start(self):
