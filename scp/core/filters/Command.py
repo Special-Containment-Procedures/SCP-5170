@@ -2,8 +2,8 @@ import re
 from typing import List
 from pyrogram.filters import create
 from pyrogram.types import Message
-from pyrogram import Client
 from configparser import ConfigParser
+from scp import core
 
 config = ConfigParser()
 config.read('config.ini')
@@ -28,7 +28,7 @@ def command(
     Command arguments are given to user as message.command
     """
 
-    async def func(flt, client: Client, message: Message):
+    async def func(flt, client: core.clients.Client, message: Message):
         text: str = message.text or message.caption
         message.command = None
         if not text:
