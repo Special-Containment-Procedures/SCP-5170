@@ -15,7 +15,7 @@
     __longVersion__ (get Versions 0)
     __version__ (get Versions 1)
     console (logging.StreamHandler)
-    fileLogger (logging.FileHandler "logs.txt")
+    fileLogger (logging.FileHandler "logs.txt" :encoding "utf-8")
     idle (core.functions.Idle))
 
 (logging.basicConfig

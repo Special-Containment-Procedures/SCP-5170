@@ -84,7 +84,6 @@ class Client(pyrogram.Client):
             f'logged in as {self.me.first_name}.',
         )
 
-
     async def stop(self, *args):
         logging.warning(
             f'logged out from {super.me.first_name}.',

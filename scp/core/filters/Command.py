@@ -43,18 +43,16 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = p
             without_prefix = text[len(prefix):]
 
             for cmd in flt.commands:
-                if not re.match(rf'^(?:{cmd}(?:@?{username})?)(?:\s|$)', without_prefix, flags=0 if flt.case_sensitive else re.IGNORECASE):
+                if not re.match(
+                    rf'^(?:{cmd}(?:@?{username})?)(?:\s|$)',
+                    without_prefix, flags=0 if flt.case_sensitive else re.IGNORECASE,
+                ):
                     continue
 
                 without_command = re.sub(
                     rf'{cmd}(?:@?{username})?\s?', '', without_prefix,
                     count=1, flags=0 if flt.case_sensitive else re.IGNORECASE,
                 )
-
-                # match.groups are 1-indexed, group(1) is the quote, group(2) is the text
-                # between the quotes, group(3) is unquoted, whitespace-split text
-
-                # Remove the escape character from the arguments
                 message.command = [cmd] + [
                     re.sub(r"\\([\"'])", r'\1', m.group(2) or m.group(3) or '')
                     for m in command_re.finditer(without_command)

@@ -3,8 +3,8 @@ import glob
 
 
 def loadModule(modDir: str):
-    hy_paths = glob.glob(dirname(__file__) + '/' + modDir + '/*.hy')
-    py_paths = glob.glob(dirname(__file__) + '/' + modDir + '/*.py')
+    hy_paths = glob.glob(f'{dirname(__file__)}/{modDir}/*.hy')
+    py_paths = glob.glob(f'{dirname(__file__)}/{modDir}/*.py')
     mod_paths = hy_paths + py_paths
     return sorted([
         basename(f)[:-3]
