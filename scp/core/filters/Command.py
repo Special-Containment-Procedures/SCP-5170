@@ -29,7 +29,7 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = p
     command_re = re.compile(r"([\"'])(.*?)(?<!\\)\1|(\S+)")
 
     async def func(flt, client: core.clients.Client, message: Message):
-        username = client.me.username or ""
+        username = client.me.username or ''
         text = message.text or message.caption
         message.command = None
 
@@ -43,18 +43,20 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = p
             without_prefix = text[len(prefix):]
 
             for cmd in flt.commands:
-                if not re.match(rf"^(?:{cmd}(?:@?{username})?)(?:\s|$)", without_prefix, flags=0 if flt.case_sensitive else re.IGNORECASE):
+                if not re.match(rf'^(?:{cmd}(?:@?{username})?)(?:\s|$)', without_prefix, flags=0 if flt.case_sensitive else re.IGNORECASE):
                     continue
 
-                without_command = re.sub(rf"{cmd}(?:@?{username})?\s?", "", without_prefix, count=1, flags=0 if flt.case_sensitive else re.IGNORECASE)
-
+                without_command = re.sub(
+                    rf'{cmd}(?:@?{username})?\s?', '', without_prefix,
+                    count=1, flags=0 if flt.case_sensitive else re.IGNORECASE,
+                )
 
                 # match.groups are 1-indexed, group(1) is the quote, group(2) is the text
                 # between the quotes, group(3) is unquoted, whitespace-split text
 
                 # Remove the escape character from the arguments
                 message.command = [cmd] + [
-                    re.sub(r"\\([\"'])", r"\1", m.group(2) or m.group(3) or "")
+                    re.sub(r"\\([\"'])", r'\1', m.group(2) or m.group(3) or '')
                     for m in command_re.finditer(without_command)
                 ]
 
@@ -67,12 +69,12 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = p
 
     prefixes = [] if prefixes is None else prefixes
     prefixes = prefixes if isinstance(prefixes, list) else [prefixes]
-    prefixes = set(prefixes) if prefixes else {""}
+    prefixes = set(prefixes) if prefixes else {''}
 
     return create(
         func,
-        "CommandFilter",
+        'CommandFilter',
         commands=commands,
         prefixes=prefixes,
-        case_sensitive=case_sensitive
+        case_sensitive=case_sensitive,
     )

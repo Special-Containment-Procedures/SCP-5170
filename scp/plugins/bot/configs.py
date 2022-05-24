@@ -9,7 +9,7 @@ from scp import bot, user
 async def _(_, message: bot.types.Message):
     doc = bot.md.KanTeXDocument()
     sec = bot.md.Section('Configurations')
-    for x, y in bot._config.__dict__['_sections'].items():
+    for x, y in bot.config.__dict__['_sections'].items():
         subsec = bot.md.SubSection(x)
         for i, n in y.items():
             conf = bot.md.KeyValueItem(bot.md.Bold(i), bot.md.Code(n))
@@ -37,7 +37,7 @@ async def _(_, message: bot.types.Message):
 async def _(_, query: bot.types.CallbackQuery):
     if query.data == 'edit/config':
         buttons = []
-        for _, y in bot._config.__dict__['_sections'].items():
+        for _, y in bot.config.__dict__['_sections'].items():
             buttons.extend(
                 [
                     bot.types.InlineKeyboardButton(
@@ -50,7 +50,7 @@ async def _(_, query: bot.types.CallbackQuery):
             reply_markup=bot.types.InlineKeyboardMarkup(buttons),
         )
     toEdit = query.data.split('/')[2]
-    for x, y in bot._config.__dict__['_sections'].items():
+    for x, y in bot.config.__dict__['_sections'].items():
         for i, n in y.items():
             if i == toEdit:
                 await query.edit_message_text(
@@ -67,9 +67,9 @@ async def _(_, query: bot.types.CallbackQuery):
                 editConfig = await query.from_user.ask(
                     f'send me the value to change in {i}',
                 )
-                bot._config.set(x, i, editConfig.text)
+                bot.config.set(x, i, editConfig.text)
                 with open('config.ini', 'w') as configfile:
-                    bot._config.write(configfile)
+                    bot.config.write(configfile)
                 return await query.message.reply(
                     bot.md.KanTeXDocument(
                         bot.md.Section(

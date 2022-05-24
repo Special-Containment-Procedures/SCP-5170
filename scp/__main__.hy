@@ -1,7 +1,7 @@
 (import asyncio)
 (require sys)
 (import [scp[user bot loop idle]])
-(import [scp.core.functions.plugins[loadPlugins]])
+(import [scp.core.functions[loadPlugins]])
 (import [scp.database.Operational[InitializeDatabase]])
 
 
