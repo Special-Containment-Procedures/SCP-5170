@@ -105,7 +105,10 @@ class Client(pyrogram.Client):
                     timeout=timeout,
                     sleep_threshold=sleep_threshold,
                 )
-            except (pyrogram.errors.SlowmodeWait, pyrogram.errors.FloodWait) as e:
+            except (
+                self.exceptions.SlowmodeWait,
+                self.exceptions.FloodWait,
+            ) as e:
                 logging.warning(f'Sleeping for - {e.x} | {e}')
                 await asyncio.sleep(e.x + 2)
             except OSError:
