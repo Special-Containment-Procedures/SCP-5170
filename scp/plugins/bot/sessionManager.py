@@ -1,4 +1,3 @@
-from pydoc import describe
 from scp import user, bot
 
 

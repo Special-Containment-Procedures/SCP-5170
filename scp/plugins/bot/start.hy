@@ -1,9 +1,7 @@
 (import [scp[bot user __version__ __longVersion__]])
 
 
-(with-decorator (
-    bot.on_message :filters (bot.filters.command "start" :prefixes "/"))
-    (defn/a _ [_ message]
+(defn/a start-command [_ message]
         (setv text
             (user.md.KanTeXDocument
                 (user.md.Section "SCP-5170"
@@ -20,5 +18,11 @@
                 (bot.types.InlineKeyboardMarkup
                     [[(bot.types.InlineKeyboardButton :text "help" :callback_data "help_back")]])
             :disable_web_page_preview True))
-        )
-    )
+)
+
+
+
+(bot.add_handler
+    :handler (bot.handlers.MessageHandler
+    :callback start-command
+    :filters (& (| (bot.filters.user bot.sudo) (bot.filters.user user.me.id)) (bot.filters.command "start" :prefixes "/"))))
