@@ -1,45 +1,6 @@
 from scp import user, bot
 
 
-@bot.on_message(
-    (bot.filters.user(bot.sudo) | bot.filters.user(user.me.id))
-    & bot.filters.command('sessions', prefixes='/'),
-)
-async def _(_, message: user.types.Message):
-    auths = await user.GetAuthorizations()
-    try:
-        session_hash = int(message.command[1])
-    except IndexError:
-        session_hash = 0
-    for auth in auths.authorizations:
-        if auth.hash == session_hash:
-            sec = user.md.Section(
-                "Active Session (This Session)",
-                user.md.KeyValueItem(
-                    user.md.Bold('device_model'), user.md.Code(auth.device_model)),
-                user.md.KeyValueItem(
-                    user.md.Bold('platform'), user.md.Code(auth.platform)),
-                user.md.KeyValueItem(
-                    user.md.Bold('sys_version'), user.md.Code(auth.system_version)),
-                user.md.KeyValueItem(
-                    user.md.Bold('api_id'), user.md.Code(auth.api_id)),
-                user.md.KeyValueItem(
-                    user.md.Bold('app'),
-                    user.md.Code(f"{auth.app_name}({auth.app_version}) {'⭐' if auth.official_app else ''}")),
-                user.md.KeyValueItem(
-                    user.md.Bold('country'), user.md.Code(f"{auth.country} {auth.ip}"))
-            )
-            return await message.reply(
-                user.md.KanTeXDocument(sec),
-                reply_markup=bot.types.InlineKeyboardMarkup(
-                    [
-                        [bot.types.InlineKeyboardButton(f"Calls {'❎' if auth.call_requests_disabled else '✅'}", callback_data=f'ses_{auth.hash}_c'),bot.types.InlineKeyboardButton(f"Secret Chats {'❎' if auth.encrypted_requests_disabled else '✅'}", callback_data=f'ses_{auth.hash}_s')],
-                        [] if auth.hash == 0 else [bot.types.InlineKeyboardButton('Log Out', callback_data=f'logout_{auth.hash}')],
-                        [bot.types.InlineKeyboardButton('Other Sessions', switch_inline_query_current_chat="getAuths")]
-                    ]
-                )
-            )
-
 @bot.on_callback_query(
     (bot.filters.user(bot.sudo) | bot.filters.user(user.me.id))
     & bot.filters.regex('logout_'),
