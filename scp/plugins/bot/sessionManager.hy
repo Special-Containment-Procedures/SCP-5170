@@ -1,12 +1,9 @@
 (import [scp[user bot]])
 
 
-(defn/a session-manager [_ message]
-    (setv auths (await (user.GetAuthorizations)))
-    (try
-        (setv session-hash (int (get message.command 1)))
-    (except [IndexError]
-        (setv session-hash 0)))
+(defn/a session-manager [_ ^bot.types.Message message]
+    (setv auths (await (user.GetAuthorizations))
+        session-hash (try (int (get message.command 1)) (except [IndexError] 0)))
     (for [auth auths.authorizations]
         (if (= auth.hash session-hash)
             (setv section (user.md.Section "Active Session"
@@ -31,12 +28,13 @@
                     [(bot.types.InlineKeyboardButton "Other Sessions" :switch_inline_query_current_chat "getAuths")]])))))
 
 
-(defn/a get-auths [_ query]
+(defn/a get-auths [_ ^bot.types.InlineQuery query]
     (setv auths (await (user.GetAuthorizations))
-        answers [])
-    (for [auth auths.authorizations]
-        (if (!= auth.hash 0)
-            (.append answers (user.types.InlineQueryResultArticle :title f"{auth.app_name}({auth.app_version}){(if auth.official_app \"⭐\" \"\")}" :description f"{auth.device_model} || {auth.country} {auth.ip}" :input_message_content (user.types.InputTextMessageContent f"/sessions {auth.hash}")))))
+        answers [] )
+    (for [auth auths.authorizations] (if (!= auth.hash 0) (.append answers (user.types.InlineQueryResultArticle
+        :title f"{auth.app_name}({auth.app_version}){(if auth.official_app \"⭐\" \"\")}"
+        :description f"{auth.device_model} || {auth.country} {auth.ip}"
+        :input_message_content (user.types.InputTextMessageContent f"/sessions {auth.hash}")))))
     (return (await (query.answer answers :cache_time 0))))
 
 
