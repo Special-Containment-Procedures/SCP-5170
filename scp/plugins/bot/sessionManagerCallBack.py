@@ -1,15 +1,6 @@
 from scp import user, bot
 
 
-@bot.on_callback_query(
-    (bot.filters.user(bot.sudo) | bot.filters.user(user.me.id))
-    & bot.filters.regex('logout_'),
-)
-async def _(_, query: user.types.CallbackQuery):
-    await user.ResetAuthorization(hash=int(query.data.split('_')[1]))
-    await query.message.delete()
-    return await query.answer("Session has been Destroyed!", show_alert=True)
-
 # WIP
 @bot.on_callback_query(
     (bot.filters.user(bot.sudo) | bot.filters.user(user.me.id))

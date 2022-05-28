@@ -38,6 +38,12 @@
     (return (await (query.answer answers :cache_time 0))))
 
 
+(defn/a logout-handler [_ ^bot.types.CallbackQuery query]
+    (await (user.ResetAuthorization :hash (int (get (query.data.split "_") 1))))
+    (await (query.message.delete))
+    (return (await (query.answer "Session has been Desctroyed!" :show_alert True))))
+
+
 (bot.add_handler
     :handler (bot.handlers.MessageHandler
     :callback session-manager
@@ -47,3 +53,8 @@
     :handler (bot.handlers.InlineQueryHandler
     :callback get-auths
     :filters (& (bot.filters.user user.me.id) (bot.filters.regex "^getAuths"))))
+
+(bot.add_handler
+    :handler (bot.handlers.CallbackQueryHandler
+    :callback logout-handler
+    :filters (& (| (bot.filters.user bot.sudo) (bot.filters.user user.me.id)) (bot.filters.regex "logout_"))))
