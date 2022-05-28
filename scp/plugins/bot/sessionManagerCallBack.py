@@ -35,17 +35,3 @@ async def _(_, query: user.types.CallbackQuery):
     )
     await query.message.edit_reply_markup(reply_markup=user.types.InlineKeyboardMarkup([[bot.types.InlineKeyboardButton(f"Calls {'✅' if q[2] == 'c' and query.message.reply_markup.inline_keyboard[0][0].text.split(' ')[-1] != '✅' else '❎'}", callback_data=f'ses_{q[1]}_c'), bot.types.InlineKeyboardButton(f"Secret Chats {'✅' if q[2] == 's' and query.message.reply_markup.inline_keyboard[0][1].text.split(' ')[-1] != '✅' else '❎'}", callback_data=f'ses_{q[1]}_s')], [bot.types.InlineKeyboardButton('Log Out', callback_data=f'logout_{q[1]}')], [bot.types.InlineKeyboardButton('Other Sessions', switch_inline_query_current_chat="getAuths")]]))
     return await query.answer(f'{"Secret Chat" if q[2] == "s" else "Calls"} settings changed.')
-
-@bot.on_inline_query(
-    user.filters.user(
-        user.me.id,
-    )
-    & user.filters.regex('^getAuths'),
-)
-async def _(_, query: bot.types.InlineQuery):
-    auths = await user.GetAuthorizations()
-    answers = [user.types.InlineQueryResultArticle(title=f"{auth.app_name}({auth.app_version}) {'⭐' if auth.official_app else ''}", description=f"{auth.device_model} || {auth.country} {auth.ip}", input_message_content=user.types.InputTextMessageContent(f'/sessions {auth.hash}')) for auth in auths.authorizations if auth.hash != 0]
-    await query.answer(
-        answers,
-        cache_time=0,
-    )
