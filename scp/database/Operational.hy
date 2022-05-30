@@ -19,4 +19,4 @@
                 (user.config.set
                     ".internal" db (str channel.id))))
         (with [file (open "config.ini" "w")]
-                (user.config.write file)))
+            (user.config.write file)))
