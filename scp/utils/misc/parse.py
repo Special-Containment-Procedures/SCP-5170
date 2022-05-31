@@ -1,17 +1,5 @@
-from scp import user
+from ._keyboard import _KB  # noqa
 from math import ceil
-
-
-class _KB(user.types.InlineKeyboardButton):
-    def __eq__(self, other):
-        return self.text == other.text
-
-    def __lt__(self, other):
-        return self.text < other.text
-
-    def __gt__(self, other):
-        return self.text > other.text
-
 
 def paginate_modules(page_n, module_dict, prefix, chat=None):
     modules = sorted([

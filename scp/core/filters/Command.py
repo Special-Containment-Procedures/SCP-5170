@@ -57,7 +57,6 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = p
                     re.sub(r"\\([\"'])", r'\1', m.group(2) or m.group(3) or '')
                     for m in command_re.finditer(without_command)
                 ]
-
                 return True
 
         return False
