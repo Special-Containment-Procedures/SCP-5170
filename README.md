@@ -34,9 +34,6 @@ therefore a plugin can be very simple to make and import into `scp/plugins/priva
 ```
 scp.bot - bot client
 scp.user - user client
-client.filters - pyrogram filters (for user client)
-client.filters.sudo - a filter with sudoers added
-client.filters.command - command filter with '(*prefix)command@username'
 ```
 
  - an Example plugin the echo to a command with `(*prefix)hello`:
@@ -50,7 +47,7 @@ from scp import user
     & user.filters.command('hello')
 )
 async def _(_, message: types.Message):
-    await message.reply('hello')
+    return await message.reply('hello')
 ```
 
 #### hy
@@ -61,6 +58,19 @@ async def _(_, message: types.Message):
     user.on_message (user.filters.command "hello"))
     (defn/a _ [_ message]
         (await (message.reply "hello"))))
+```
+or
+```
+(import [scp[user]])
+
+(defn/a echo-hello [_ message]
+    (return (await (message.reply "hello"))))
+
+
+(user.add_handler
+    :handler (user.handlers.MessageHandler
+    :callback echo-hello
+    :filters (& user.filters.me (bot.filters.command "hello" :prefixes "/") bot.filters.private)))
 ```
 
 ### FAQ
