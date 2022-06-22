@@ -10,7 +10,6 @@ config = ConfigParser()
 with open('config.ini') as configFile:
     config.read_file(configFile)
 
-
 class Client(pyrogram.Client):
     def __init__(
         self,
@@ -24,7 +23,6 @@ class Client(pyrogram.Client):
         self.api_id = api_id
         self.api_hash = api_hash
         self.test_mode = test_mode
-        self.me = None
         self.md = Markdown
         self.exceptions = pyrogram.errors
         self.filters = pyrogram.filters
@@ -70,7 +68,6 @@ class Client(pyrogram.Client):
 
     async def start(self):
         await super().start()
-        self.me = await super().get_me()
         setattr(
             self.filters, 'sudo',
             (self.filters.me | self.filters.user(self.sudo)),
