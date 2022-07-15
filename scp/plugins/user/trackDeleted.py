@@ -118,7 +118,7 @@ async def dataTypeCheck(
                     content,
                     caption=text,
                 )
-            except AttributeError:
+            except TypeError:
                 return await SendType[dataType](
                     user.config.getint('scp-5170', 'LogChannel'),
                     content
