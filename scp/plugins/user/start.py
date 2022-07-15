@@ -27,12 +27,10 @@ async def _(_, query: bot.types.InlineQuery):
     await m.delete()
     with user.storage.lock, user.storage.conn:
         groups = user.storage.conn.execute(
-            'SELECT id FROM peers WHERE type in '
-            '("group", "supergroup", "channel")',
-        ).fetchall()
+            'SELECT COUNT(id) FROM peers WHERE type in ("group", "supergroup", "channel")'
+        ).fetchone()
         users = user.storage.conn.execute(
-            'SELECT id FROM peers WHERE type in ("user", "bot")',
-        ).fetchall()
+            'SELECT COUNT(id) FROM peers WHERE type in ("user", "bot")').fetchone()
     text = user.md.KanTeXDocument(
         user.md.Section(
             'SCP-5170',
@@ -55,11 +53,11 @@ async def _(_, query: bot.types.InlineQuery):
                 ),
                 user.md.KeyValueItem(
                     user.md.Bold('peer_users'),
-                    user.md.Code(f'{len(users)} users'),
+                    user.md.Code(f'{users[0]} users'),
                 ),
                 user.md.KeyValueItem(
                     user.md.Bold('peer_groups'),
-                    user.md.Code(f'{len(groups)} groups'),
+                    user.md.Code(f'{groups[0]} groups'),
                 ),
                 user.md.KeyValueItem(
                     user.md.Bold('scp_uptime'),
@@ -88,7 +86,7 @@ async def _(_, query: bot.types.InlineQuery):
                 reply_markup=bot.types.InlineKeyboardMarkup(
                     [[
                         bot.types.InlineKeyboardButton(
-                            'Source', url='https://github.com/pokurt/SCP-5170',
+                            'Source', url='https://github.com/Special-Containment-Procedures/SCP-5170',
                         ),
                         bot.types.InlineKeyboardButton(
                             'close', callback_data='close_message',

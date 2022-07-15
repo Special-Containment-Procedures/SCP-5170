@@ -112,11 +112,17 @@ async def dataTypeCheck(
                 text,
             )
         else:
-            return await SendType[dataType](
-                user.config.getint('scp-5170', 'LogChannel'),
-                content,
-                caption=text,
-            )
+            try:
+                return await SendType[dataType](
+                    user.config.getint('scp-5170', 'LogChannel'),
+                    content,
+                    caption=text,
+                )
+            except AttributeError:
+                return await SendType[dataType](
+                    user.config.getint('scp-5170', 'LogChannel'),
+                    content
+                )
     except user.exceptions.exceptions.bad_request_400.FileReferenceExpired:
         ...
 

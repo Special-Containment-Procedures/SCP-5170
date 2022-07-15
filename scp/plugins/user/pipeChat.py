@@ -22,7 +22,7 @@ chats = user.filters.chat()
 _chats = {}
 
 
-@user.on_message(chats, group=100)
+@user.on_message(chats)
 async def _(_, message: user.types.Message):
     for x, y in _chats.items():
         if x == message.chat.id:
