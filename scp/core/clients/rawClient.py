@@ -5,6 +5,8 @@ from kantex import md as Markdown
 from aiohttp import ClientSession
 import asyncio
 import logging
+from typing import Union, Optional, List
+from datetime import datetime
 
 config = ConfigParser()
 with open('config.ini') as configFile:
@@ -18,6 +20,7 @@ class Client(pyrogram.Client):
         api_id: int = config.getint('pyrogram', 'api_id'),
         api_hash: str = config.get('pyrogram', 'api_hash'),
         test_mode: bool = config.getboolean('pyrogram', 'test_mode'),
+        cache = {}
     ):
         self.name = name
         self.api_id = api_id
@@ -31,6 +34,7 @@ class Client(pyrogram.Client):
         self.enums = pyrogram.enums
         self.handlers = pyrogram.handlers
         self.config = config
+        self.cache = cache
         self.sudo = [
             int(x) for x in self.config.get(
                 'scp-5170', 'SudoList',
@@ -77,6 +81,8 @@ class Client(pyrogram.Client):
             self.types, 'InlineQueryResultAudio',
             core.types.InlineQueryResultAudio,
         )
+        if self.me.is_bot:
+            self.cache['bot_me'] = self.me
         logging.warning(
             f'logged in as {self.me.first_name}.',
         )
@@ -113,7 +119,65 @@ class Client(pyrogram.Client):
                 # await self.session.stop()
                 # await self.session.start()
                 ...
-
+    async def send_message(
+        self,
+        chat_id: Union[int, str],
+        text: str,
+        parse_mode: Optional["pyrogram.enums.ParseMode"] = None,
+        entities: List["pyrogram.types.MessageEntity"] = None,
+        disable_web_page_preview: bool = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        schedule_date: datetime = None,
+        protect_content: bool = None,
+        reply_markup: Union[
+            "pyrogram.types.InlineKeyboardMarkup",
+            "pyrogram.types.ReplyKeyboardMarkup",
+            "pyrogram.types.ReplyKeyboardRemove",
+            "pyrogram.types.ForceReply"
+        ] = None
+    ) -> "pyrogram.types.Message":
+        if reply_markup and not self.me.is_bot:
+            unique = str(self.rnd_id())
+            self.cache[unique] = self.types.InlineQueryResultArticle(
+                title='None',
+                input_message_content=self.types.InputTextMessageContent(text),
+                reply_markup=reply_markup,
+            )
+            # do the magic here
+            x = await super().get_inline_bot_results(
+                self.cache['bot_me'].username,
+                f"inline_message {unique}"
+            )
+            output = await super().send_inline_bot_result(
+                chat_id=chat_id,
+                query_id=x.query_id,
+                result_id=x.results[0].id,
+                disable_notification=disable_notification,
+                reply_to_message_id=reply_to_message_id
+            )
+            del self.cache[unique]
+            return output
+        return await super().send_message(
+            chat_id,
+            text,
+            parse_mode,
+            entities,
+            disable_web_page_preview,
+            disable_notification,
+            reply_to_message_id,
+            schedule_date,
+            protect_content,
+            reply_markup
+        )
+    # async def send_photo(
+        
+    # ):
+    #     ...
+    # async def send_audio(
+        
+    # ):
+    #     ...
     # from Kantek
     async def resolve_url(self, url: str) -> str:
         if not url.startswith('http'):

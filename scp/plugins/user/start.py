@@ -11,16 +11,6 @@ from scp.utils.cache import Messages  # type: ignore
     user.filters.sudo & user.filters.command('scp'),
 )
 async def _(_, message: user.types.Message):
-    x = await user.get_inline_bot_results(bot.me.username, 'scp')
-    for m in x.results:
-        await message.reply_inline_bot_result(x.query_id, m.id, quote=True)
-
-
-@bot.on_inline_query(
-    bot.filters.user(user.me.id)
-    & bot.filters.regex('^scp'),
-)
-async def _(_, query: bot.types.InlineQuery):
     start = time.time()
     m = await user.send_message('me', '.')
     end = time.time()
@@ -31,71 +21,20 @@ async def _(_, query: bot.types.InlineQuery):
         ).fetchone()
         users = user.storage.conn.execute(
             'SELECT COUNT(id) FROM peers WHERE type in ("user", "bot")').fetchone()
-    text = user.md.KanTeXDocument(
-        user.md.Section(
-            'SCP-5170',
-            user.md.SubSection(
-                'version: {}'.format(
-                    user.md.Link(
-                        __version__,
-                        'https://github.com/Special-Containment-Procedures/SCP-5170/commit/{}'.format(
-                            __longVersion__,
-                        ),
-                    ),
+    text = user.md.KanTeXDocument(user.md.Section('SCP-5170', user.md.SubSection(f"version: {user.md.Link(__version__, f'https://github.com/Special-Containment-Procedures/SCP-5170/commit/{__longVersion__}')}", user.md.KeyValueItem(user.md.Bold('dc_id'), user.md.Code(await user.storage.dc_id()),), user.md.KeyValueItem(user.md.Bold('ping_dc'), user.md.Code(f'{round((end - start) * 1000, 3)}ms'),), user.md.KeyValueItem(user.md.Bold('peer_users'), user.md.Code(f'{users[0]} users'),), user.md.KeyValueItem(user.md.Bold('peer_groups'), user.md.Code(f'{groups[0]} groups'),), user.md.KeyValueItem(user.md.Bold('scp_uptime'), user.md.Code(HumanizeTime(time.time() - RUNTIME)),), user.md.KeyValueItem(user.md.Bold('message_recieved'), user.md.Code(str(len(Messages))),), user.md.KeyValueItem(user.md.Bold('base'), user.md.Code(f'pyro({pyroVer})/hy({hyVer})')))))
+    return await message.reply(
+        text,
+        reply_markup=bot.types.InlineKeyboardMarkup(
+            [[
+                bot.types.InlineKeyboardButton(
+                    'Source', url='https://github.com/Special-Containment-Procedures/SCP-5170',
                 ),
-                user.md.KeyValueItem(
-                    user.md.Bold('dc_id'),
-                    user.md.Code(await user.storage.dc_id()),
+                bot.types.InlineKeyboardButton(
+                    'close', callback_data='close_message',
                 ),
-                user.md.KeyValueItem(
-                    user.md.Bold('ping_dc'),
-                    user.md.Code(f'{round((end - start) * 1000, 3)}ms'),
-                ),
-                user.md.KeyValueItem(
-                    user.md.Bold('peer_users'),
-                    user.md.Code(f'{users[0]} users'),
-                ),
-                user.md.KeyValueItem(
-                    user.md.Bold('peer_groups'),
-                    user.md.Code(f'{groups[0]} groups'),
-                ),
-                user.md.KeyValueItem(
-                    user.md.Bold('scp_uptime'),
-                    user.md.Code(HumanizeTime(time.time() - RUNTIME)),
-                ),
-                user.md.KeyValueItem(
-                    user.md.Bold('message_recieved'),
-                    user.md.Code(str(len(Messages))),
-                ),
-                user.md.KeyValueItem(
-                    user.md.Bold('base'),
-                    user.md.Code(f'pyro({pyroVer})/hy({hyVer})'),
-                ),
-            ),
+            ]],
         ),
-    )
-    await query.answer(
-        results=[
-            bot.types.InlineQueryResultArticle(
-                title='SCP-5170',
-                description=__version__,
-                input_message_content=bot.types.InputTextMessageContent(
-                    text,
-                    disable_web_page_preview=True,
-                ),
-                reply_markup=bot.types.InlineKeyboardMarkup(
-                    [[
-                        bot.types.InlineKeyboardButton(
-                            'Source', url='https://github.com/Special-Containment-Procedures/SCP-5170',
-                        ),
-                        bot.types.InlineKeyboardButton(
-                            'close', callback_data='close_message',
-                        ),
-                    ]],
-                ),
-            ),
-        ],
-        cache_time=0,
+        disable_web_page_preview=True,
     )
 
 
