@@ -1,6 +1,7 @@
 from ._keyboard import _KB  # noqa
 from math import ceil
 
+
 def paginate_modules(page_n, module_dict, prefix, chat=None):
     modules = sorted([
         _KB(

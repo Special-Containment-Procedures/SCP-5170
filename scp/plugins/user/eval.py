@@ -25,7 +25,8 @@ exec_tasks = {}
 )
 async def pyexec(client: user, message: user.types.Message):
     code = message.text.split(None, 1)[1].replace(
-        "“", '"').replace("”", '"').replace("‘", "'").replace("’", "'")
+        '“', '"',
+    ).replace('”', '"').replace('‘', "'").replace('’', "'")
     tree = ast.parse(code)
     obody = tree.body
     body = obody.copy()
@@ -119,52 +120,34 @@ async def pyexec(client: user, message: user.types.Message):
 
 @user.on_message(user.filters.me & user.filters.command('listEval'))
 async def listexec(_, message: user.types.Message):
-    try:
-        x = await user.get_inline_bot_results(
-            bot.me.username,
-            '_listEval',
-        )
-    except (
-        user.exceptions.PeerIdInvalid,
-        user.exceptions.BotResponseTimeout,
-    ):
+    if not exec_tasks:
         return await message.reply('no tasks', quote=True)
-    for m in x.results:
-        await message.reply_inline_bot_result(x.query_id, m.id, quote=True)
-
-
-@bot.on_inline_query(
-    user.filters.user(user.me.id)
-    & user.filters.regex('^_listEval'),
-)
-async def _(_, query: user.types.InlineQuery):
     buttons = [[
         user.types.InlineKeyboardButton(
             text='cancel all',
             callback_data='cancel_eval_all',
         ),
     ]]
-    buttons.extend([user.types.InlineKeyboardButton(text=x, callback_data=f'cancel_eval_{x}',),] for x, _ in exec_tasks.items())
-
-    await query.answer(
-        results=[
-            user.types.InlineQueryResultArticle(
-                title='list eval tasks',
-                input_message_content=user.types.InputTextMessageContent(
-                    user.md.KanTeXDocument(
-                        user.md.Section(
-                            'ListEvalTasks',
-                            user.md.KeyValueItem(
-                                'Tasks Running',
-                                str(len(exec_tasks)),
-                            ),
-                        ),
-                    ),
-                ),
-                reply_markup=user.types.InlineKeyboardMarkup(buttons),
+    buttons.extend(
+        [
+            user.types.InlineKeyboardButton(
+                text=x,
+                callback_data=f'cancel_eval_{x}',
             ),
-        ],
-        cache_time=0,
+        ] for x, _ in exec_tasks.items()
+    )
+    text = user.md.KanTeXDocument(
+        user.md.Section(
+            'ListEvalTasks',
+            user.md.KeyValueItem(
+                'Tasks Running',
+                str(len(exec_tasks)),
+            ),
+        ),
+    )
+    return await message.reply(
+        text,
+        reply_markup=user.types.InlineKeyboardMarkup(buttons),
     )
 
 

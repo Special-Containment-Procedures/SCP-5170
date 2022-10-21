@@ -12,6 +12,7 @@ config = ConfigParser()
 with open('config.ini') as configFile:
     config.read_file(configFile)
 
+
 class Client(pyrogram.Client):
     def __init__(
         self,
@@ -20,7 +21,7 @@ class Client(pyrogram.Client):
         api_id: int = config.getint('pyrogram', 'api_id'),
         api_hash: str = config.get('pyrogram', 'api_hash'),
         test_mode: bool = config.getboolean('pyrogram', 'test_mode'),
-        cache = {}
+        cache={},
     ):
         self.name = name
         self.api_id = api_id
@@ -119,24 +120,25 @@ class Client(pyrogram.Client):
                 # await self.session.stop()
                 # await self.session.start()
                 ...
+
     async def send_message(
         self,
         chat_id: Union[int, str],
         text: str,
-        parse_mode: Optional["pyrogram.enums.ParseMode"] = None,
-        entities: List["pyrogram.types.MessageEntity"] = None,
+        parse_mode: Optional['pyrogram.enums.ParseMode'] = None,
+        entities: List['pyrogram.types.MessageEntity'] = None,
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
         schedule_date: datetime = None,
         protect_content: bool = None,
         reply_markup: Union[
-            "pyrogram.types.InlineKeyboardMarkup",
-            "pyrogram.types.ReplyKeyboardMarkup",
-            "pyrogram.types.ReplyKeyboardRemove",
-            "pyrogram.types.ForceReply"
+            'pyrogram.types.InlineKeyboardMarkup',
+            'pyrogram.types.ReplyKeyboardMarkup',
+            'pyrogram.types.ReplyKeyboardRemove',
+            'pyrogram.types.ForceReply',
         ] = None
-    ) -> "pyrogram.types.Message":
+    ) -> 'pyrogram.types.Message':
         if reply_markup and not self.me.is_bot:
             unique = str(self.rnd_id())
             self.cache[unique] = self.types.InlineQueryResultArticle(
@@ -147,14 +149,14 @@ class Client(pyrogram.Client):
             # do the magic here
             x = await super().get_inline_bot_results(
                 self.cache['bot_me'].username,
-                f"inline_message {unique}"
+                f'inline_message {unique}',
             )
             output = await super().send_inline_bot_result(
                 chat_id=chat_id,
                 query_id=x.query_id,
                 result_id=x.results[0].id,
                 disable_notification=disable_notification,
-                reply_to_message_id=reply_to_message_id
+                reply_to_message_id=reply_to_message_id,
             )
             del self.cache[unique]
             return output
@@ -168,14 +170,14 @@ class Client(pyrogram.Client):
             reply_to_message_id,
             schedule_date,
             protect_content,
-            reply_markup
+            reply_markup,
         )
     # async def send_photo(
-        
+
     # ):
     #     ...
     # async def send_audio(
-        
+
     # ):
     #     ...
     # from Kantek

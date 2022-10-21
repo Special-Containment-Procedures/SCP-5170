@@ -61,10 +61,11 @@ async def _(_, message: user.types.Message):
         return await message.delete()
     data = _gen(message.text.split(None, 1)[1])
     await message.reply_document(
-        (await (await user.aioclient.post(
-            'https://api.qrcode-monkey.com//qr/custom',
-            json=data,
-        )
+        (await (
+            await user.aioclient.post(
+                'https://api.qrcode-monkey.com//qr/custom',
+                json=data,
+            )
         ).json())['imageUrl'].replace(
             '//api', 'https://api',
         ),
@@ -82,17 +83,22 @@ async def _(_, message: user.types.Message):
     f = await message.reply_to_message.download()
     await message.reply(
         user.md.KanTeXDocument(
-            user.md.Section('qrCode Decoded:',
-                user.md.KeyValueItem(user.md.Bold('data'), user.md.Code(
-                    await QrRead(f),
-                )))
-        ), quote=True)
+            user.md.Section(
+                'qrCode Decoded:',
+                user.md.KeyValueItem(
+                    user.md.Bold('data'), user.md.Code(
+                        await QrRead(f),
+                    ),
+                ),
+            ),
+        ), quote=True,
+    )
     os.remove(f)
 
 
 async def QrRead(file: str):
     async with user.aioclient.post(
-        "http://api.qrserver.com/v1/read-qr-code/",
-        data={"file": open(file, "rb")}
+        'http://api.qrserver.com/v1/read-qr-code/',
+        data={'file': open(file, 'rb')},
     ) as resp:
         return (await resp.json())[0]['symbol'][0]['data']

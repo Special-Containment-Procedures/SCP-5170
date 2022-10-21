@@ -9,7 +9,7 @@ import asyncio
     ~user.filters.chat(
         [int(i) for i in user.config.get('scp-5170', 'IgnoreGroups').split()],
     )
-    & user.filters.group
+    & user.filters.group,
 )
 async def _(_, message: user.types.Message):
     """
@@ -162,13 +162,13 @@ async def _(_, message: user.types.Message):
 async def _(_, query: user.types.CallbackQuery):
     data = query.data.split('_')
     uid = data[1]
-    message_id = data[2]
+    mid = data[2]
     reason = data[3]
     await user.Report(
-            peer=await user.resolve_peer(int(uid)),
-            id=[int(message_id)],
-            reason=_parseReport(reason),
-            message=reason,
+        peer=await user.resolve_peer(int(uid)),
+        id=[int(mid)],
+        reason=_parseReport(reason),
+        message=reason,
     )
     await query.edit_message_reply_markup(
         reply_markup=user.types.InlineKeyboardMarkup(
@@ -176,11 +176,11 @@ async def _(_, query: user.types.CallbackQuery):
                 [
                     user.types.InlineKeyboardButton(
                         'message.link',
-                        url=f"https://t.me/c/{uid.replace('-100', '')}/{message_id}"
-                    )
-                ]
-            ]
-        )
+                        url=f"https://t.me/c/{uid.replace('-100', '')}/{mid}",
+                    ),
+                ],
+            ],
+        ),
     )
 
 

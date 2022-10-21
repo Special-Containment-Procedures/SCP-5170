@@ -67,9 +67,11 @@ async def _(_, query: bot.types.InlineQuery):
     except IndexError:
         u = await user.get_chat(get_user)
     try:
-        onlines = (await user.GetOnlines(
-                    peer=await user.resolve_peer(get_user),
-                )).onlines
+        onlines = (
+            await user.GetOnlines(
+                peer=await user.resolve_peer(get_user),
+            )
+        ).onlines
     except user.exceptions.PeerIdInvalid:
         onlines = 0
     if isinstance(u, user.types.Chat):
@@ -120,7 +122,13 @@ async def _(_, query: bot.types.InlineQuery):
             ],
         ) if u.permissions else None
     else:
-        text = user.md.Section('UserInfo:', user.md.SubSection(user.md.KeyValueItem(key='name', value=f'{u.first_name} ' + ((u.last_name or ''))), user.md.KeyValueItem(user.md.Bold('user_id',), user.md.Code(u.id),), user.md.KeyValueItem(user.md.Bold('is_contact',), user.md.Code(u.is_contact),), user.md.KeyValueItem(user.md.Bold('username',), user.md.Code(name_check(u.username)),), user.md.KeyValueItem(user.md.Bold('dc_id',), user.md.Code(u.dc_id),)))
+        text = user.md.Section(
+            'UserInfo:', user.md.SubSection(
+                user.md.KeyValueItem(key='name', value=f'{u.first_name} ' + (u.last_name or '')), user.md.KeyValueItem(user.md.Bold('user_id'), user.md.Code(u.id)), user.md.KeyValueItem(
+                    user.md.Bold('is_contact'), user.md.Code(u.is_contact),
+                ), user.md.KeyValueItem(user.md.Bold('username'), user.md.Code(name_check(u.username))), user.md.KeyValueItem(user.md.Bold('dc_id'), user.md.Code(u.dc_id)),
+            ),
+        )
 
         keyboard = user.types.InlineKeyboardMarkup(
             [[

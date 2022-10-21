@@ -15,7 +15,7 @@
     (await (s.get_best_server))
     (await (s.download))
     (await (s.upload))
-    (setv text (user.md.KanTeXDocument 
+    (setv text (user.md.KanTeXDocument
         (user.md.Section
             "speedTest"
             (user.md.SubSection

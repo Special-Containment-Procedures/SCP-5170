@@ -7,21 +7,21 @@
     (for [auth auths.authorizations]
         (if (= auth.hash session-hash)
             (setv section (user.md.Section "Active Session"
-                (user.md.KeyValueItem 
+                (user.md.KeyValueItem
                     (user.md.Bold "device_model") (user.md.Code auth.device_model))
-                (user.md.KeyValueItem 
+                (user.md.KeyValueItem
                     (user.md.Bold "platform") (user.md.Code auth.platform))
-                (user.md.KeyValueItem 
+                (user.md.KeyValueItem
                     (user.md.Bold "sys_version") (user.md.Code auth.system_version))
-                (user.md.KeyValueItem 
+                (user.md.KeyValueItem
                     (user.md.Bold "api_id") (user.md.Code auth.api_id))
-                (user.md.KeyValueItem 
+                (user.md.KeyValueItem
                     (user.md.Bold "app") (user.md.Code f"{auth.app_name}({auth.app_version}) {(if auth.official_app \"⭐\" \"\")}"))
-                (user.md.KeyValueItem 
+                (user.md.KeyValueItem
                     (user.md.Bold "country") (user.md.Code f"{auth.country} {auth.ip}"))))))
             (return (await (message.reply
                 (user.md.KanTeXDocument section)
-                :reply_markup (bot.types.InlineKeyboardMarkup 
+                :reply_markup (bot.types.InlineKeyboardMarkup
                 [[(bot.types.InlineKeyboardButton f"Calls {(if auth.call_requests_disabled \"✅\"\"❎\")}" :callback_data f"ses_{auth.hash}_c")
                     (bot.types.InlineKeyboardButton f"Secret Chats {(if auth.encrypted_requests_disabled \"✅\"\"❎\")}" :callback_data f"ses_{auth.hash}_s")]
                     (if (= auth.hash 0) [] [(bot.types.InlineKeyboardButton "Log Out" :callback_data f"logout_{auth.hash}")])

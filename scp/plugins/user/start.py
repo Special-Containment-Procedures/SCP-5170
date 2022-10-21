@@ -17,11 +17,51 @@ async def _(_, message: user.types.Message):
     await m.delete()
     with user.storage.lock, user.storage.conn:
         groups = user.storage.conn.execute(
-            'SELECT COUNT(id) FROM peers WHERE type in ("group", "supergroup", "channel")'
+            'SELECT COUNT(id) FROM peers WHERE type in ("group", "supergroup", "channel")',
         ).fetchone()
         users = user.storage.conn.execute(
-            'SELECT COUNT(id) FROM peers WHERE type in ("user", "bot")').fetchone()
-    text = user.md.KanTeXDocument(user.md.Section('SCP-5170', user.md.SubSection(f"version: {user.md.Link(__version__, f'https://github.com/Special-Containment-Procedures/SCP-5170/commit/{__longVersion__}')}", user.md.KeyValueItem(user.md.Bold('dc_id'), user.md.Code(await user.storage.dc_id()),), user.md.KeyValueItem(user.md.Bold('ping_dc'), user.md.Code(f'{round((end - start) * 1000, 3)}ms'),), user.md.KeyValueItem(user.md.Bold('peer_users'), user.md.Code(f'{users[0]} users'),), user.md.KeyValueItem(user.md.Bold('peer_groups'), user.md.Code(f'{groups[0]} groups'),), user.md.KeyValueItem(user.md.Bold('scp_uptime'), user.md.Code(HumanizeTime(time.time() - RUNTIME)),), user.md.KeyValueItem(user.md.Bold('message_recieved'), user.md.Code(str(len(Messages))),), user.md.KeyValueItem(user.md.Bold('base'), user.md.Code(f'pyro({pyroVer})/hy({hyVer})')))))
+            'SELECT COUNT(id) FROM peers WHERE type in ("user", "bot")',
+        ).fetchone()
+    text = user.md.KanTeXDocument(
+        user.md.Section(
+            'SCP-5170',
+            user.md.SubSection(
+                f"version: {user.md.Link(__version__,f'https://github.com/Special-Containment-Procedures/SCP-5170/commit/{__longVersion__}')}",
+                user.md.KeyValueItem(
+                    user.md.Bold('dc_id'),
+                    user.md.Code(
+                        await user.storage.dc_id(),
+                    ),
+                ),
+                user.md.KeyValueItem(
+                    user.md.Bold('ping_dc'),
+                    user.md.Code(
+                        f'{round((end - start) * 1000, 3)}ms',
+                    ),
+                ),
+                user.md.KeyValueItem(
+                    user.md.Bold('peer_users'),
+                    user.md.Code(f'{users[0]} users'),
+                ),
+                user.md.KeyValueItem(
+                    user.md.Bold('peer_groups'),
+                    user.md.Code(f'{groups[0]} groups'),
+                ),
+                user.md.KeyValueItem(
+                    user.md.Bold('scp_uptime'),
+                    user.md.Code(HumanizeTime(time.time() - RUNTIME)),
+                ),
+                user.md.KeyValueItem(
+                    user.md.Bold('message_recieved'),
+                    user.md.Code(str(len(Messages))),
+                ),
+                user.md.KeyValueItem(
+                    user.md.Bold('base'),
+                    user.md.Code(f'pyro({pyroVer})/hy({hyVer})'),
+                ),
+            ),
+        ),
+    )
     return await message.reply(
         text,
         reply_markup=bot.types.InlineKeyboardMarkup(

@@ -7,7 +7,6 @@ import asyncio
 import itertools
 
 
-
 @user.on_message(
     ~user.filters.me
     & ~user.filters.service,
@@ -121,7 +120,7 @@ async def dataTypeCheck(
             except TypeError:
                 return await SendType[dataType](
                     user.config.getint('scp-5170', 'LogChannel'),
-                    content
+                    content,
                 )
     except user.exceptions.exceptions.bad_request_400.FileReferenceExpired:
         ...

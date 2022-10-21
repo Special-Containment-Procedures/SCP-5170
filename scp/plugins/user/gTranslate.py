@@ -36,10 +36,7 @@ async def _(_, message: user.types.Message):
         if len(message.text.split()) == 1:
             return await message.delete()
         target = message.text.split()[1]
-        if message.reply_to_message.text:
-            text = message.reply_to_message.text
-        else:
-            text = message.reply_to_message.caption
+        text = message.reply_to_message.text or message.reply_to_message.caption
         try:
             tekstr = await trl.translate(text, targetlang=target)
         except ValueError as err:
