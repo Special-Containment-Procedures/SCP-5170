@@ -1,11 +1,14 @@
 import pyrogram
+from pyrogram import utils, file_id
 from scp import core
 from configparser import ConfigParser
 from kantex import md as Markdown
 from aiohttp import ClientSession
 import asyncio
 import logging
-from typing import Union, Optional, List
+import os
+import re
+from typing import Union, Optional, List, BinaryIO, Callable
 from datetime import datetime
 
 config = ConfigParser()
@@ -21,8 +24,10 @@ class Client(pyrogram.Client):
         api_id: int = config.getint('pyrogram', 'api_id'),
         api_hash: str = config.get('pyrogram', 'api_hash'),
         test_mode: bool = config.getboolean('pyrogram', 'test_mode'),
-        cache={},
+        cache=None,
     ):
+        if cache is None:
+            cache = {}
         self.name = name
         self.api_id = api_id
         self.api_hash = api_hash
@@ -78,12 +83,6 @@ class Client(pyrogram.Client):
             (self.filters.me | self.filters.user(self.sudo)),
         )
         setattr(self.filters, 'command', core.filters.command)
-        setattr(
-            self.types, 'InlineQueryResultAudio',
-            core.types.InlineQueryResultAudio,
-        )
-        if self.me.is_bot:
-            self.cache['bot_me'] = self.me
         logging.warning(
             f'logged in as {self.me.first_name}.',
         )
@@ -133,22 +132,26 @@ class Client(pyrogram.Client):
         schedule_date: datetime = None,
         protect_content: bool = None,
         reply_markup: Union[
-            'pyrogram.types.InlineKeyboardMarkup',
-            'pyrogram.types.ReplyKeyboardMarkup',
-            'pyrogram.types.ReplyKeyboardRemove',
-            'pyrogram.types.ForceReply',
+            'Client.types.InlineKeyboardMarkup',
+            'Client.types.ReplyKeyboardMarkup',
+            'Client.types.ReplyKeyboardRemove',
+            'Client.types.ForceReply',
         ] = None
-    ) -> 'pyrogram.types.Message':
+    ) -> 'Client.types.Message':
         if reply_markup and not self.me.is_bot:
             unique = str(self.rnd_id())
             self.cache[unique] = self.types.InlineQueryResultArticle(
                 title='None',
-                input_message_content=self.types.InputTextMessageContent(text),
+                input_message_content=self.types.InputTextMessageContent(
+                    text,
+                    disable_web_page_preview=disable_web_page_preview,
+                    parse_mode=parse_mode,
+                ),
                 reply_markup=reply_markup,
             )
             # do the magic here
             x = await super().get_inline_bot_results(
-                self.cache['bot_me'].username,
+                self.cache['botUser'].me.username,
                 f'inline_message {unique}',
             )
             output = await super().send_inline_bot_result(
@@ -172,10 +175,100 @@ class Client(pyrogram.Client):
             protect_content,
             reply_markup,
         )
-    # async def send_photo(
 
-    # ):
-    #     ...
+    async def send_photo(
+        self: 'pyrogram.Client',
+        chat_id: Union[int, str],
+        photo: Union[str, BinaryIO],
+        caption: str = '',
+        parse_mode: Optional['Client.enums.ParseMode'] = None,
+        caption_entities: List['Client.types.MessageEntity'] = None,
+        ttl_seconds: int = None,
+        disable_notification: bool = None,
+        reply_to_message_id: int = None,
+        schedule_date: datetime = None,
+        protect_content: bool = None,
+        reply_markup: Union[
+            'Client.types.InlineKeyboardMarkup',
+            'Client.types.ReplyKeyboardMarkup',
+            'Client.types.ReplyKeyboardRemove',
+            'Client.types.ForceReply',
+        ] = None,
+        progress: Callable = None,
+        progress_args: tuple = ()
+    ) -> Optional['Client.types.Message']:  # sourcery skip: last-if-guard
+        if reply_markup and not self.me.is_bot:
+            unique = str(self.rnd_id())
+            if os.path.isfile(photo):
+                media = self.raw.types.InputMediaUploadedPhoto(
+                    file=await self.cache['botUser'].save_file(photo),
+                )
+                outfile = await self.cache['botUser'].UploadMedia(
+                    peer=self.raw.types.InputPeerSelf(),
+                    media=media,
+                )
+                photo_file = self.types.Photo._parse(
+                    self.cache['botUser'],  photo=outfile.photo,
+                )
+                self.cache[unique] = self.types.InlineQueryResultCachedPhoto(
+                    photo_file_id=photo_file.file_id,
+                    caption=caption,
+                    reply_markup=reply_markup,
+                )
+            elif re.match('^https?://', photo):
+                self.cache[unique] = self.types.InlineQueryResultPhoto(
+                    photo_url=photo,
+                    thumb_url=None,
+                    caption=caption,
+                    reply_markup=reply_markup,
+                )
+            else:
+                f = await super().download_media(photo)
+                media = self.raw.types.InputMediaUploadedPhoto(
+                    file=await self.cache['botUser'].save_file(f),
+                )
+                os.remove(f)
+                outfile = await self.cache['botUser'].UploadMedia(
+                    peer=self.raw.types.InputPeerSelf(),
+                    media=media,
+                )
+                photo_file = self.types.Photo._parse(
+                    self.cache['botUser'],  photo=outfile.photo,
+                )
+                self.cache[unique] = self.types.InlineQueryResultCachedPhoto(
+                    photo_file_id=photo_file.file_id,
+                    caption=caption,
+                    reply_markup=reply_markup,
+                )
+            # do the magic here
+            x = await super().get_inline_bot_results(
+                self.cache['botUser'].me.username,
+                f'inline_message {unique}',
+            )
+            output = await super().send_inline_bot_result(
+                chat_id=chat_id,
+                query_id=x.query_id,
+                result_id=x.results[0].id,
+                disable_notification=disable_notification,
+                reply_to_message_id=reply_to_message_id,
+            )
+            del self.cache[unique]
+            return output
+        return await super().send_photo(
+            chat_id,
+            photo,
+            caption,
+            parse_mode,
+            caption_entities,
+            ttl_seconds,
+            disable_notification,
+            reply_to_message_id,
+            schedule_date,
+            protect_content,
+            reply_markup,
+            progress,
+            progress_args,
+        )
     # async def send_audio(
 
     # ):

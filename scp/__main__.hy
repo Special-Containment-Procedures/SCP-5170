@@ -10,6 +10,7 @@
     (await (user.start))
     (await (InitializeDatabase))
     (await (loadPlugins(.split(user.config.get "scp-5170" "plugins"))))
+    (assoc user.cache "botUser" bot)
     (await (idle.idle))
 )
 
