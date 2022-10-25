@@ -16,7 +16,7 @@ class Notes:
         self
     ):
         msg = await user.get_messages(
-            chat_id=user._config.getint(
+            chat_id=user.config.getint(
                 '.internal',
                 'databasechannel-test'
                 if user.test_mode else 'databasechannel',
@@ -31,12 +31,12 @@ class Notes:
 
     async def dump(self, data: dict):
         return await user.edit_message_text(
-            chat_id=user._config.getint(
+            chat_id=user.config.getint(
                 '.internal',
                 'databasechannel-test'
                 if user.test_mode else 'databasechannel',
             ),
-            message_id=user._config.getint(
+            message_id=user.config.getint(
                 '.internal', 'notes-test' if user.test_mode else 'notes',
             ),
             text=f'```{json.dumps(data)}```',

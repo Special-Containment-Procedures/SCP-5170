@@ -223,23 +223,16 @@ class Client(pyrogram.Client):
                     reply_markup=reply_markup,
                 )
             else:
-                f = await super().download_media(photo)
-                media = self.raw.types.InputMediaUploadedPhoto(
-                    file=await self.cache['botUser'].save_file(f),
-                )
-                os.remove(f)
-                outfile = await self.cache['botUser'].UploadMedia(
-                    peer=self.raw.types.InputPeerSelf(),
-                    media=media,
-                )
-                photo_file = self.types.Photo._parse(
-                    self.cache['botUser'],  photo=outfile.photo,
+                message = await self.send_photo(self.config.getint('.internal', 'databasechannel'), photo)
+                message = await self.cache['botUser'].get_messages(
+                    self.config.getint('.internal', 'databasechannel'), message.id
                 )
                 self.cache[unique] = self.types.InlineQueryResultCachedPhoto(
-                    photo_file_id=photo_file.file_id,
+                    photo_file_id=message.photo.file_id,
                     caption=caption,
                     reply_markup=reply_markup,
                 )
+                await super().delete_messages(self.config.getint('.internal', 'databasechannel'), message.id)
             # do the magic here
             x = await super().get_inline_bot_results(
                 self.cache['botUser'].me.username,
