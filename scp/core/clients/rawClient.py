@@ -225,7 +225,9 @@ class Client(pyrogram.Client):
             else:
                 message = await self.send_photo(self.config.getint('.internal', 'databasechannel'), photo)
                 message = await self.cache['botUser'].get_messages(
-                    self.config.getint('.internal', 'databasechannel'), message.id
+                    self.config.getint(
+                        '.internal', 'databasechannel',
+                    ), message.id,
                 )
                 self.cache[unique] = self.types.InlineQueryResultCachedPhoto(
                     photo_file_id=message.photo.file_id,

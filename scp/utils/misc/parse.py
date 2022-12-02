@@ -49,5 +49,4 @@ def paginate_modules(page_n, module_dict, prefix, chat=None):
                 ),
             ),
         ]
-
     return pairs
