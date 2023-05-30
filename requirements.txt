@@ -1,6 +1,6 @@
 aiofiles==0.7.0
 aiohttp==3.7.4.post0
-aiopyston==1.1.1
+aiopyston==1.2.1
 attrify==3.0
 checksumdir==1.2.0
 Faker==8.11.0

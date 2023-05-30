@@ -1,4 +1,4 @@
-from pyston import PystonClient, exceptions
+from pyston import PystonClient, exceptions, File
 import os
 from scp import user
 import aiofiles
@@ -55,7 +55,7 @@ async def _(_, message: user.types.Message):
         os.remove(file)
     start = time.time()
     try:
-        output = await client.execute(language, code)
+        output = await client.execute(language=language, files=[File(code)])
     except exceptions.InvalidLanguage as err:
         output = err
     end = time.time()
