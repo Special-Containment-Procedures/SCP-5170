@@ -1,5 +1,6 @@
 from scp import user, bot
 from scp.utils.cache import Messages  # type: ignore
+import contextlib
 from typing import List
 from scp.utils.parser import getAttr
 from scp.utils.MessageTypes import getType, Types  # type: ignore
@@ -95,7 +96,7 @@ async def dataTypeCheck(
     content: str,
     text: user.md.KanTeXDocument,
 ):
-    try:
+    with contextlib.suppress(user.exceptions.FileReferenceExpired):
         if dataType == Types.TEXT:
             return await SendType[dataType](
                 user.config.getint('scp-5170', 'LogChannel'),
@@ -122,8 +123,6 @@ async def dataTypeCheck(
                     user.config.getint('scp-5170', 'LogChannel'),
                     content,
                 )
-    except user.exceptions.exceptions.bad_request_400.FileReferenceExpired:
-        ...
 
 
 async def clearMessages(

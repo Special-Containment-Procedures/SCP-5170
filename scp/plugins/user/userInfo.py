@@ -23,7 +23,7 @@ __DOC__ = str(
 async def _(_, message: user.types.Message):
     cmd = message.command
     if not message.reply_to_message and len(cmd) == 1:
-        get_user = message.from_user.id
+        get_user = message.from_user.id if message.from_user else message.sender_chat.id
     elif len(cmd) == 1:
         if message.reply_to_message.forward_from:
             get_user = message.reply_to_message.forward_from.id
@@ -33,17 +33,15 @@ async def _(_, message: user.types.Message):
         get_user = cmd[1]
         with contextlib.suppress(ValueError):
             get_user = int(cmd[1])
-    try:
+    with contextlib.suppress(
+        user.exceptions.PeerIdInvalid,
+        user.exceptions.BotResponseTimeout,
+    ):
         Uid = (await user.get_chat(get_user)).id
         x = await user.get_inline_bot_results(
             bot.me.username,
             '_userInfo ' + str(Uid),
         )
-    except (
-        user.exceptions.PeerIdInvalid,
-        user.exceptions.BotResponseTimeout,
-    ) as err:
-        return await message.reply(err, quote=True)
     for m in x.results:
         await message.reply_inline_bot_result(x.query_id, m.id, quote=True)
 

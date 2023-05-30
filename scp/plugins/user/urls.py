@@ -10,10 +10,6 @@ __DOC__ = str(
                 'Redirect',
                 user.md.Code('(*prefix)url {url}'),
             ),
-            user.md.SubSection(
-                'IpInfo',
-                user.md.Code('(*prefix)dns {ip_address} - * optional'),
-            ),
         ),
     ),
 )
@@ -37,18 +33,3 @@ async def _(_, message: user.types.Message):
         ),
     )
     await message.reply(text, quote=True)
-
-
-@user.on_message(user.filters.me & user.filters.command('dns'))
-async def _(_, message: user.types.Message):
-    query = '' if len(message.command) == 1 else message.command[1]
-    doc = user.md.KanTeXDocument()
-    sec = user.md.Section(f'IP-info: `{query}`')
-    for key, value in (await user.aioclient.get(f'http://ip-api.com/json/{query}')).json().items():
-        sec.append(
-            user.md.KeyValueItem(
-                user.md.Bold(key), user.md.Code(value),
-            ),
-        )
-    doc.append(sec)
-    await message.reply(doc, quote=True)

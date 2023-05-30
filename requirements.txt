@@ -4,14 +4,14 @@ aiopyston==1.1.1
 attrify==3.0
 checksumdir==1.2.0
 Faker==8.11.0
+git+https://github.com/pokurt/pyromod
 GitPython==3.1.18
-gpytranslate==1.3.0
+gpytranslate==1.5.1
 humanize==3.11.0
 hy==1.0a3
 kantex==0.2.0
 psutil==5.9.3
-Pyrogram==2.0.59
-pyromod==1.5
+Pyrogram==2.0.106
 rich==10.7.0
 shortuuid==1.0.1
 TgCrypto==1.2.4

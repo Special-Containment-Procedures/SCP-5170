@@ -39,6 +39,6 @@ class Notes:
             message_id=user.config.getint(
                 '.internal', 'notes-test' if user.test_mode else 'notes',
             ),
-            text=f'```{json.dumps(data)}```',
+            text=f'{json.dumps(data)}',
             parse_mode=user.enums.parse_mode.ParseMode.MARKDOWN,
         )

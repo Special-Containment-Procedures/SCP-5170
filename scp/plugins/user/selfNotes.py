@@ -44,6 +44,16 @@ async def _(_, message: user.types.Message):
     data = await Notes().load()
     args = message.text.split(None, 2)
     data[args[1]] = args[2]
+    if args[1] in data:
+        return await message.reply(
+            user.md.KanTeXDocument(
+                user.md.Section(
+                    'Note Exists',
+                    user.md.Code(f'"{args[1]}" already exist in Database.'),
+                ),
+            ),
+            quote=True,
+        )
     await Notes().dump(data)
     return await message.reply(
         user.md.KanTeXDocument(
