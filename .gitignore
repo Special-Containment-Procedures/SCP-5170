@@ -122,3 +122,4 @@ scp/plugins/private/*.hy
 test.py
 unknown_errors.txt
 logs.txt
+.idea/*
