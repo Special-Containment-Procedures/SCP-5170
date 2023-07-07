@@ -15,7 +15,7 @@ async def _(_, message: user.types.Message):
     m = await user.send_message('me', '.')
     end = time.time()
     await m.delete()
-    with user.storage.lock, user.storage.conn:
+    with user.storage.conn:
         groups = user.storage.conn.execute(
             'SELECT COUNT(id) FROM peers WHERE type in ("group", "supergroup", "channel")',
         ).fetchone()

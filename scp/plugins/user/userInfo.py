@@ -53,11 +53,9 @@ async def _(_, message: user.types.Message):
     & user.filters.regex('^_userInfo'),
 )
 async def _(_, query: bot.types.InlineQuery):
-    try:
+    with contextlib.supress(ValueError, IndexError):
         answers = []
         get_user = int(query.query.split(' ')[1])
-    except (ValueError, IndexError):
-        return None
     try:
         u = await user.get_users(get_user)
     except user.exceptions.PeerIdInvalid:
